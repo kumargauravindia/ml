@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ML Prediction App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+        h1 { color: #333; }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        input { margin: 10px 0; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        button { padding: 10px; border: none; border-radius: 4px; background-color: #007bff; color: #fff; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; font-size: 18px; color: green; }
+    </style>
+</head>
+<body>
+    <h1>ML Prediction App</h1>
+    <form id="predictForm">
+        <input type="number" step="any" name="sepal_length" placeholder="Sepal Length (cm)" required>
+        <input type="number" step="any" name="sepal_width" placeholder="Sepal Width (cm)" required>
+        <input type="number" step="any" name="petal_length" placeholder="Petal Length (cm)" required>
+        <input type="number" step="any" name="petal_width" placeholder="Petal Width (cm)" required>
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                "sepal length (cm)": parseFloat(form.sepal_length.value),
+                "sepal width (cm)": parseFloat(form.sepal_width.value),
+                "petal length (cm)": parseFloat(form.petal_length.value),
+                "petal width (cm)": parseFloat(form.petal_width.value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.prediction !== undefined) {
+                    resultDiv.textContent = "Prediction: " + result.prediction;
+                } else if (result.error) {
+                    resultDiv.textContent = "Error: " + result.error;
+                }
+            } catch (err) {
+                resultDiv.textContent = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
