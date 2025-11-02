@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_file
 import pickle
 import pandas as pd
 import os
@@ -10,7 +10,7 @@ if not os.path.exists(MODEL_PATH):
 with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__)
 
 # Home route
 @app.route("/", methods=["GET"])
@@ -20,7 +20,7 @@ def home():
 # Front-end route
 @app.route("/frontend", methods=["GET"])
 def frontend():
-    return send_from_directory(app.static_folder, "index.html")
+    return send_file("index.html")
 
 # Prediction route
 @app.route("/predict", methods=["POST"])
